@@ -1,0 +1,37 @@
+---
+title: "A5 Q8.6"
+author: "Joshua Levine"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question
+In R, what’s the difference between `[`, `[[`, and `$` when applied to a list?
+
+## Answer
+To answer this question, we will create a list and play with the three operators.
+```{r}
+my_list <- list(ints = 2:5, 1, logicals = c(TRUE, FALSE))
+my_list[1]
+typeof(my_list[1])
+typeof(my_list[2])
+names(my_list[1])
+my_list[c(1, 2)]
+my_list[[1]]
+typeof(my_list[[1]])
+names(my_list[[1]])
+my_list[[c(1, 2)]]
+my_list$ints
+typeof(my_list$ints)
+names(my_list$ints)
+```
+
+We draw the following conclusions:
+
+* `[` will extract the element(s) of a list corresponding to the inputted indices. The extracted elements are always returned as lists, regardless of their respective data types and whether they have names.
+* `[[` can only extract a single "immediate" element of the list at a time, but will return it in its "default" data type (outside of a list) while dropping its name.
+* `$` is a convenient version of `[[` for named elements of a list, as the extracted element is referred to by its name rather than its index.
