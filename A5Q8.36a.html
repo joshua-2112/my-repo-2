@@ -11,7 +11,7 @@
 
 <meta name="author" content="Joshua Levine" />
 
-<meta name="date" content="2026-01-22" />
+<meta name="date" content="2026-01-23" />
 
 <title>A5Q8.36a</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">A5Q8.36a</h1>
 <h4 class="author">Joshua Levine</h4>
-<h4 class="date">2026-01-22</h4>
+<h4 class="date">2026-01-23</h4>
 
 </div>
 
@@ -365,7 +365,7 @@ display: none;
 <code>sqrt</code>, <code>sum</code> and <code>abs</code>.</p>
 <ol style="list-style-type: lower-alpha">
 <li>Write a function that returns the values in <code>yVec</code> which
-are &gt; 100.</li>
+are <span class="math inline">\(&gt; 100\)</span>.</li>
 </ol>
 </div>
 <div id="solution" class="section level2">
@@ -374,9 +374,24 @@ are &gt; 100.</li>
 follows:</p>
 <pre class="r"><code># Set a seed for reproducibility
 set.seed(67834)
-yVec &lt;- sample(0:999, 250, replace = T)</code></pre>
+yVec &lt;- sample(0:999, 250, replace = T)
+yVec</code></pre>
+<pre><code>##   [1] 982 170 696 300 776 108 102  44 172 181 931 195 403 305 125 382  90 795
+##  [19] 296 616  14 777 728 128 668 373  85 128 212 166 319  99 908  86 899 334
+##  [37] 766 484 407 493 632 499 994 625 855 474 280 204  26  83 718 521 515 714
+##  [55] 980 798 375 325  60 567 203 122 771 150 986 820 847  43 167 844 493 162
+##  [73] 307 725 443 766 505 913 870 928 652 625 566 598 780 298 425 678 452 674
+##  [91] 521 538 231  88   0 230 819 146  35 566  13 883 422 231 907 498 289 596
+## [109] 342 862 985 273 584 138 494 140 435 865 446 376 486  30 319 452 185 944
+## [127]  40 674 740 231 769 639 989 344 373 690 965 869 163 104 888 537 362 548
+## [145] 501  90 651 595 884 532 652 951 662 271  19 860 411 492 383 162 851  97
+## [163] 541 394 949 633 804 146 473 268 976 472  99 685 872 721 307 945 279 234
+## [181] 781 326 934 454  31 889 948 830  98 659 668  92 845 450 326 306 672 498
+## [199] 492 447 151 414 292 291 649 297 841 314 710 633 592 290 791 867 798 708
+## [217] 153 481 965 750 665 962 918 871 338 472  49 277 979 128 321 623 220 228
+## [235] 121 732 130 212 658 217  10 259 568 354 759 633 373 108 794 388</code></pre>
 <p>We will write and test a function to perform the desired task:</p>
-<pre class="r"><code>count_greater_than &lt;- function(vec, threshold = 100){
+<pre class="r"><code>values_greater_than &lt;- function(vec, threshold = 100){
   
   # Assert that `vec` is a vector consisting of elements whose atomic data
   # types rank no higher than &quot;double&quot; on the hierarchy
@@ -385,13 +400,24 @@ yVec &lt;- sample(0:999, 250, replace = T)</code></pre>
          &quot;logical, integer, double&quot;))
   }
   
-  # Determine and return the number of elements greater than the provided
-  # threshold
-  return(sum(vec &gt; threshold))
+  # Determine and return the elements greater than the provided threshold
+  return(vec[vec &gt; threshold])
 }
 
-count_greater_than(yVec) # The default threshold is 100</code></pre>
-<pre><code>## [1] 225</code></pre>
+values_greater_than(yVec) # The default threshold is 100</code></pre>
+<pre><code>##   [1] 982 170 696 300 776 108 102 172 181 931 195 403 305 125 382 795 296 616
+##  [19] 777 728 128 668 373 128 212 166 319 908 899 334 766 484 407 493 632 499
+##  [37] 994 625 855 474 280 204 718 521 515 714 980 798 375 325 567 203 122 771
+##  [55] 150 986 820 847 167 844 493 162 307 725 443 766 505 913 870 928 652 625
+##  [73] 566 598 780 298 425 678 452 674 521 538 231 230 819 146 566 883 422 231
+##  [91] 907 498 289 596 342 862 985 273 584 138 494 140 435 865 446 376 486 319
+## [109] 452 185 944 674 740 231 769 639 989 344 373 690 965 869 163 104 888 537
+## [127] 362 548 501 651 595 884 532 652 951 662 271 860 411 492 383 162 851 541
+## [145] 394 949 633 804 146 473 268 976 472 685 872 721 307 945 279 234 781 326
+## [163] 934 454 889 948 830 659 668 845 450 326 306 672 498 492 447 151 414 292
+## [181] 291 649 297 841 314 710 633 592 290 791 867 798 708 153 481 965 750 665
+## [199] 962 918 871 338 472 277 979 128 321 623 220 228 121 732 130 212 658 217
+## [217] 259 568 354 759 633 373 108 794 388</code></pre>
 </div>
 
 
