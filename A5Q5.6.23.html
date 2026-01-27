@@ -11,7 +11,7 @@
 
 <meta name="author" content="Joshua Levine" />
 
-<meta name="date" content="2026-01-24" />
+<meta name="date" content="2026-01-27" />
 
 <title>A5Q5.6.23</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">A5Q5.6.23</h1>
 <h4 class="author">Joshua Levine</h4>
-<h4 class="date">2026-01-24</h4>
+<h4 class="date">2026-01-27</h4>
 
 </div>
 
@@ -390,47 +390,71 @@ library(car)
 library(spida2)
 library(ggplot2)
 library(dplyr)</code></pre>
-<p>It seems reasonable to fit the model <span class="math inline">\(\text{education} = \beta_0 + \beta_1 \times
-\text{last}\)</span>, where <code>last</code> is a dummy variable equal
-to 1 for the last ten years of the survey (2007-2016), and 0 for the
-first ten years of the survey (1974-1983). We are only considering the
-female sex for the purpose of the question, and vocabulary scores (in my
-opinion) act more like a consequence of education than vice versa.</p>
+<p>We are asked to to analyze whether the rate of change in educational
+attainment among American women significantly differed between the first
+ten years of the survey (1974-1983) and the final ten years (2007-2016).
+Since our ensuing analysis pertains to only one sex, and vocabulary
+scores are more plausibly an outcome of education rather than a
+determinant, it makes sense to exclude both variables from our model.
+Thus, we will fit the model</p>
+<p><span class="math display">\[
+\text{education} = \beta_0 + \beta_1 \times \text{year_of_decade} +
+\beta_2 \times \text{last} + \beta_3 \times \text{year_of_decade} \times
+\text{last} + \epsilon,
+\]</span></p>
+<p>wherein:</p>
+<ul>
+<li><code>year_of_decade</code> is equal to the number of years that
+have elapsed since the beginning of the relevant decade for each
+individual data point; and</li>
+<li><code>last</code> is a dummy variable equal to 1 for the last ten
+years of the survey and 0 for the first ten years of the survey.</li>
+</ul>
 <pre class="r"><code>filtered_vocab &lt;- Vocab %&gt;%
   mutate(decade = factor(ifelse(
     year &gt;= 2007, &quot;last&quot;, ifelse(year &lt;= 1983, &quot;first&quot;, NA)
   ))) %&gt;%
-  filter(sex == &quot;Female&quot; &amp; decade %in% c(&quot;first&quot;, &quot;last&quot;))
+  filter(sex == &quot;Female&quot; &amp; decade %in% c(&quot;first&quot;, &quot;last&quot;)) %&gt;%
+  mutate(year_of_decade = ifelse(decade == &quot;last&quot;, year - 2007, year - 1974))
 
-fit &lt;- lm(education ~ I(decade == &quot;last&quot;), data = filtered_vocab)
+fit &lt;- lm(education ~ year_of_decade * I(decade == &quot;last&quot;), 
+          data = filtered_vocab)
 fit</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = education ~ I(decade == &quot;last&quot;), data = filtered_vocab)
+## lm(formula = education ~ year_of_decade * I(decade == &quot;last&quot;), 
+##     data = filtered_vocab)
 ## 
 ## Coefficients:
-##             (Intercept)  I(decade == &quot;last&quot;)TRUE  
-##                  11.849                    1.786</code></pre>
-<p>According to the model, the average time spent in education among
-women has increased by 1.786 years from the 1974-1983 decade to the
-2007-2016 decade. We will run a Wald test to determine whether this
-effect is significant. The hypothesis matrix is</p>
+##                            (Intercept)                          year_of_decade  
+##                              11.667305                                0.047703  
+##                I(decade == &quot;last&quot;)TRUE  year_of_decade:I(decade == &quot;last&quot;)TRUE  
+##                               1.752338                               -0.008334</code></pre>
+<p>According to the model, the annual rate of increase in educational
+attainment among American women is 0.008334 years lower in the 2007–2016
+decade than in the 1974–1983 decade. We will now run a Wald test to
+determine whether this effect is significant. Specifically, we will
+test</p>
 <p><span class="math display">\[
-L = \begin{pmatrix} 0 &amp; 1 \end{pmatrix}
+H_0: \beta_3 = 0 \quad \text{vs.} \quad H_1: \beta_3 \neq 0.
+\]</span></p>
+<p>The hypothesis matrix is</p>
+<p><span class="math display">\[
+L = \begin{pmatrix} 0 &amp; 0 &amp; 0 &amp; 1 \end{pmatrix}
 \]</span></p>
 <p>so that</p>
 <p><span class="math display">\[
-L \begin{pmatrix} \hat{\beta_0} \\ \hat{\beta_1} \end{pmatrix} =
-\hat{\beta_1}.
+L \begin{pmatrix} \hat{\beta_0} \\ \hat{\beta_1} \\ \hat{\beta_2} \\
+\hat{\beta_3}\end{pmatrix} = \hat{\beta_3}.
 \]</span></p>
-<pre class="r"><code>wald(fit, matrix(c(0, 1), 1, 2))</code></pre>
-<pre><code>##   numDF denDF  F-value p-value
-## 1     1  7472 706.8518 &lt;.00001
-##      Estimate Std.Error DF   t-value  p-value Lower 0.95 Upper 0.95
-## [1,] 1.786481 0.067195  7472 26.58668 &lt;.00001 1.654761   1.918201</code></pre>
-<p>Since the <span class="math inline">\(p\)</span>-value is below <span class="math inline">\(0.05\)</span>, we conclude that education levels
-among American women have indeed increased between the two
-aforementioned time periods.</p>
+<pre class="r"><code>wald(fit, matrix(c(0, 0, 0, 1), 1, 4))</code></pre>
+<pre><code>##   numDF denDF   F-value p-value
+## 1     1  7470 0.1322489 0.71612
+##      Estimate  Std.Error DF   t-value  p-value Lower 0.95 Upper 0.95
+## [1,] -0.008334 0.022916  7470 -0.36366 0.71612 -0.053256  0.036589</code></pre>
+<p>Since the <span class="math inline">\(p\)</span>-value is above <span class="math inline">\(0.05\)</span>, we fail to reject <span class="math inline">\(H_0\)</span>. We conclude that the rate of
+increase in educational attainment among American women has not actually
+slowed down between the two aforementioned decades.</p>
 </div>
 
 
