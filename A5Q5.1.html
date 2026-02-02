@@ -11,7 +11,7 @@
 
 <meta name="author" content="Joshua Levine" />
 
-<meta name="date" content="2026-01-24" />
+<meta name="date" content="2026-02-02" />
 
 <title>A5Q5.1</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">A5Q5.1</h1>
 <h4 class="author">Joshua Levine</h4>
-<h4 class="date">2026-01-24</h4>
+<h4 class="date">2026-02-02</h4>
 
 </div>
 
@@ -360,8 +360,8 @@ display: none;
 <div id="question" class="section level2">
 <h2>Question</h2>
 <p>Use the ‘Vocab’ data set in the ‘car’ package. It records a
-vocabulary score for over 30,000 subjects tested over the years between
-1974 and 2016.</p>
+vocabulary score for over <span class="math inline">\(30,000\)</span>
+subjects tested over the years between 1974 and 2016.</p>
 <p>Explore the following questions. Use appropriate tables and graphs to
 explain your findings.</p>
 <ol style="list-style-type: decimal">
@@ -387,13 +387,18 @@ summary(Vocab$education)</code></pre>
 <p>The univariate distribution of the “education” variable exhibits the
 following features:</p>
 <ul>
-<li>Heavy concentration around the mean. From the above quantile plot,
-it can be seen that around 3/4 of the data lies within one standard
-deviation of the mean.
+<li>Heavy concentration around the mean. As indicated by the dashed
+lines in the above quantile plot, around <span class="math inline">\(3/4\)</span> of the data lies within one standard
+deviation of the mean. We compute the exact proportion in the below code
+and find that it is about <span class="math inline">\(78.7\%\)</span>.
 <ul>
 <li>Consequently, the “education” variable is (at least somewhat)
 light-tailed.</li>
 </ul></li>
+</ul>
+<pre class="r"><code>mean(abs(Vocab$education - mean(Vocab$education)) &lt;= sd(Vocab$education))</code></pre>
+<pre><code>## [1] 0.7869263</code></pre>
+<ul>
 <li>A significant proportion of respondents had 12 years of education,
 clearly making it the mode.</li>
 </ul>
