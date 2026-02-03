@@ -1,0 +1,94 @@
+---
+title: "A5Q5.6.23"
+author: "Joshua Levine"
+output: html_document
+date: "2026-02-02"
+---
+
+## Question
+Use the ‘Vocab’ data set in the ‘car’ package. It records a vocabulary score for over $30,000$ subjects tested over the years between 1974 and 2016.
+
+Explore the following questions. Use appropriate tables and graphs to explain your findings.
+
+<ol start="6">
+  <li>
+    Studying gaps and trends: For each of the following questions, fit a suitable model and explore the question using a suitable Wald test.
+    <ol>
+      <li value="2">
+        In the last ten years of the study, is there evidence that vocabulary scores are increasing among women?
+      </li>
+      <li value="5">
+        Repeat 2 for level of education.
+      </li>
+      <li value="23">
+        Repeat 5 comparing the last 10 years with the first 10 years.
+      </li>
+    </ol>
+  </li>
+</ol>
+
+
+
+
+## Answer
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message = FALSE}
+# Import the required packages
+library(car)
+library(spida2)
+library(ggplot2)
+library(dplyr)
+```
+
+We are asked to to analyze whether the rate of change in educational attainment among American women significantly differed between the first ten years of the survey (1974-1983) and the final ten years (2007-2016). Since our ensuing analysis pertains to only one sex, and vocabulary scores are more plausibly an outcome of education rather than a determinant, it makes sense to exclude both variables from our model. Thus, we will fit the model
+
+$$
+\text{education} = \beta_0 + \beta_1 \times \text{year_of_decade} + \beta_2 \times \text{last} + \beta_3 \times \text{year_of_decade} \times \text{last} + \epsilon,
+$$
+
+wherein:
+
+* `year_of_decade` is equal to the number of years that have elapsed since the beginning of the relevant decade for each individual data point; and
+* `last` is a dummy variable equal to 1 for the last ten years of the survey and 0 for the first ten years of the survey.
+
+```{r}
+filtered_vocab <- Vocab %>%
+  mutate(decade = factor(ifelse(
+    year >= 2007, "last", ifelse(year <= 1983, "first", NA)
+  ))) %>%
+  filter(sex == "Female" & decade %in% c("first", "last")) %>%
+  mutate(year_of_decade = ifelse(decade == "last", year - 2007, year - 1974))
+
+fit <- lm(education ~ year_of_decade * I(decade == "last"), 
+          data = filtered_vocab)
+fit
+```
+
+According to the model, the annual rate of increase in educational attainment among American women is 0.008334 years lower in the 2007–2016 decade than in the 1974–1983 decade. We will now run a Wald test to determine whether this effect is significant. Specifically, we will test
+
+$$
+H_0: \beta_3 = 0 \quad \text{vs.} \quad H_1: \beta_3 \neq 0.
+$$
+
+
+The hypothesis matrix is
+
+$$
+L = \begin{pmatrix} 0 & 0 & 0 & 1 \end{pmatrix}
+$$
+
+so that
+
+$$
+L \begin{pmatrix} \hat{\beta_0} \\ \hat{\beta_1} \\ \hat{\beta_2} \\ \hat{\beta_3}\end{pmatrix} = \hat{\beta_3}.
+$$
+
+
+```{r}
+wald(fit, matrix(c(0, 0, 0, 1), 1, 4))
+```
+
+Since the $p$-value is above $0.05$, we fail to reject $H_0$. We conclude that the rate of increase in educational attainment among American women has not actually slowed down between the two aforementioned decades.

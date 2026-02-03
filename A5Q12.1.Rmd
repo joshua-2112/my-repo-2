@@ -1,0 +1,39 @@
+---
+title: "A5Q12.1"
+author: "Joshua Levine"
+output: html_document
+date: "2026-02-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question
+Write a function that will take a vector as input and return the vector with NAs changed to a null string (““) if the vector is a character vector or to 0 if it is a numeric vector. Test your function on extreme examples.
+
+## Answer
+We first write our function:
+```{r}
+replace_na <- function(vec) {
+  result <- vec
+  if (is.character(vec)) {
+    result <- replace(vec, is.na(vec), "")
+  }
+  else if (is.numeric(vec)) {
+    result <- replace(vec, is.na(vec), 0)
+  }
+  return(result)
+}
+```
+
+Testing on some extreme cases:
+```{r}
+replace_na(c(NA, NA, NA))
+replace_na(c(NA, "", NA))
+replace_na(c(NA, 4))
+replace_na(as.factor(c("Hello", "World", NA)))
+replace_na(c("Hello", "World"))
+replace_na(c(2, 7.3))
+replace_na(c(2, 7.3, NA))
+```

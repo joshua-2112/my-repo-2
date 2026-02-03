@@ -2,7 +2,7 @@
 title: "A5 Q8.6"
 author: "Joshua Levine"
 output: html_document
-date: "`r Sys.Date()`"
+date: "2026-02-02"
 ---
 
 ```{r setup, include=FALSE}

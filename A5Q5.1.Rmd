@@ -1,0 +1,77 @@
+---
+title: "A5Q5.1"
+author: "Joshua Levine"
+output: html_document
+date: "2026-02-02"
+---
+
+## Question
+Use the ‘Vocab’ data set in the ‘car’ package. It records a vocabulary score for over $30,000$ subjects tested over the years between 1974 and 2016.
+
+Explore the following questions. Use appropriate tables and graphs to explain your findings.
+
+1. Consider the distribution of education. Are there any salient features for this distribution?
+
+## Answer
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message = FALSE}
+# Import the required packages
+library(car)
+library(spida2)
+library(ggplot2)
+library(dplyr)
+```
+
+We will first consider the univariate distribution of the "education" variable.
+```{r}
+# Obtain a summary and quantile plot of the "education" variable
+summary(Vocab$education)
+xqplot(Vocab$education)
+```
+
+The univariate distribution of the "education" variable exhibits the following features:
+
+* Heavy concentration around the mean. As indicated by the dashed lines in the above quantile plot, around $3/4$ of the data lies within one standard deviation of the mean. We compute the exact proportion in the below code and find that it is about $78.7\%$. 
+  - Consequently, the "education" variable is (at least somewhat) light-tailed.
+  
+```{r}
+mean(abs(Vocab$education - mean(Vocab$education)) <= sd(Vocab$education))
+```
+
+* A significant proportion of respondents had 12 years of education, clearly making it the mode.
+
+As both the time period and one's sex can plausibly influence one's level of education, we will now investigate the relationship between the three variables. This will enable us to gain a more comprehensive view of the "education" variable and the dataset at large. As the dataset covers a long time period (1974 to 2016), we will split the years by decade (the dataset does not contain data for every individual year).
+
+```{r}
+Vocab %>%
+  mutate(decade = factor(paste0(floor(year / 10) * 10, "s"))) %>%
+  ggplot(aes(x = decade, y = education, fill = sex)) +
+  geom_boxplot() +
+  labs(
+    title = "Education by sex over time",
+    x = "Decade",
+    y = "Years of Education",
+    fill = "Sex"
+  ) +
+  stat_summary(
+    aes(group = sex),
+    fun = mean,
+    geom = "point",
+    shape = 23,
+    size = 3,
+    fill = "white",
+    color = "black",
+    position = position_dodge(width = 0.8)
+  )
+
+```
+
+We can make the following observations:
+
+* On average, men have undergone more years of education than women in each decade. This gender gap has narrowed over time.
+* Education levels among both sexes have consistently trended upwards from the 1970s to the 2010s, although this trend has decelerated in the more recent decades.
+* For both sexes, the "left tail" of the distribution of education levels has always been heavier than the "right tail".
+  - There has always been a subset of people comprising both sexes receiving noticeably less education than the general U.S. population.

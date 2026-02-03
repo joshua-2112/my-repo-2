@@ -1,0 +1,41 @@
+---
+title: "A5Q8.36a"
+author: "Joshua Levine"
+date: "2026-02-02"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question
+[Warwick] This question uses the vectors `xVec` and `yVec` created in the previous question and the functions `sort`, `order`, `mean`, `sqrt`, `sum` and `abs`.
+
+a. Write a function that returns the values in `yVec` which are $> 100$.
+
+## Solution
+For context, `yVec` is defined in the previous question as follows:
+```{r}
+# Set a seed for reproducibility
+set.seed(67834)
+yVec <- sample(0:999, 250, replace = T)
+yVec
+```
+
+We will write and test a function to perform the desired task:
+```{r}
+values_greater_than <- function(vec, threshold = 100){
+  
+  # Assert that `vec` is a vector consisting of elements whose atomic data
+  # types rank no higher than "double" on the hierarchy
+  if(!(typeof(vec) %in% c("logical", "integer", "double"))){
+    stop(paste0("`vec` must consist of solely the following data types: ",
+         "logical, integer, double"))
+  }
+  
+  # Determine and return the elements greater than the provided threshold
+  return(vec[vec > threshold])
+}
+
+values_greater_than(yVec) # The default threshold is 100
+```

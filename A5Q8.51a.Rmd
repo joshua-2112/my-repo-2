@@ -1,0 +1,45 @@
+---
+title: "A5Q8.51a"
+author: "Joshua Levine"
+output: html_document
+date: "2026-02-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question
+[Warwick] Create a $6 \times 10$ matrix of random integers chosen from $1,2,...10$ by executing the following two lines of code:
+
+```
+set.seed(75)
+aMat <- matrix( sample(10, size = 60, replace = T), nr = 6)
+```
+
+a. Write a function to find the number of entries in each row which are greater than 4.
+
+## Answer
+We start by creating the matrix:
+```{r}
+set.seed(75)
+aMat <- matrix(sample(10, size = 60, replace = T), nr = 6)
+aMat
+```
+
+We will then create the function specified in the question. The function will return a column vector whose entries are equal to the number of entries greater than $4$ in the input matrix (`aMat` in this case).
+
+```{r}
+count_row_entries_greater_than <- function(mat, threshold = 4) {
+  result <- matrix(rep(0, nrow(mat)), nrow(mat), 1)
+  for (i in 1:nrow(mat)) {
+    result[i, 1] = sum(mat[i, ] > threshold)
+  }
+  return(result)
+}
+```
+
+Testing our function:
+```{r}
+count_row_entries_greater_than(aMat) # The default threshold is 4
+```

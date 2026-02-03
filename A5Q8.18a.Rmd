@@ -1,0 +1,42 @@
+---
+title: "A5Q8.18a"
+author: "Joshua Levine"
+output: html_document
+date: "2026-02-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question
+Let `y <- sample(1000, 30, replace = TRUE)`. Write functions in `R` to do the following. Test each function.
+
+a. Determine how many elements of y are multiples of 2.
+
+## Solution
+We first write our function:
+```{r}
+count_even <- function(vec){
+  
+  # Assert that `vec` is a vector consisting of elements whose atomic data
+  # types rank no higher than "double" on the hierarchy
+  if(!(typeof(vec) %in% c("logical", "integer", "double"))){
+    stop(paste0("`vec` must consist of solely the following data types: ",
+         "logical, integer, double"))
+  }
+  
+  # Determine and return the number of even elements
+  return(sum(vec %% 2 == 0))
+}
+```
+
+We then test our function on the vector `y` defined in the question:
+```{r}
+set.seed(837921)
+y <- sample(1000, 30, replace = TRUE)
+y
+count_even(y)
+```
+
+We find that `y` has 16 even elements.
